@@ -4,7 +4,8 @@
     "license": "mit",
     "autoload": {
         "psr-4": {
-            "Wuhuaji\\AliyunLogSdk\\": "src/"
+            "Wuhuaji\\AliyunLogSdk\\": "src/",
+            "GPBMetadata\\": "src/GPBMetadata"
         }
     },
     "authors": [
@@ -14,5 +15,8 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "google/protobuf": "dev-master"
+    }
 }
