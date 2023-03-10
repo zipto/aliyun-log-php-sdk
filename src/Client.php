@@ -20,40 +20,22 @@ class Client
         $this->project = $project;
     }
 
-    public function putLog($message){
-        $client = new \GuzzleHttp\Client();
-        
-        $host = "http://" . $this->project . '.' . $this->endpoint;
-
-        $string = Util::toByte($message);
-        $header = [
-            'x-log-compresstype' => 'deflate',
-            'Content-Type' => 'application/x-protobuf',
-            'x-log-bodyrawsize' => strlen($string)
-        ];
-        $body = gzcompress ( $string, 6 );
-        $uri = $host . '/logstores/staging_logstore/shards/lb';
-        var_dump($uri);
-        $signedHeader = Util::sign('POST', '/logstores/staging_logstore/shards/lb', $this->accessKeyId, $this->accessKeySecret, [], $header, $body);
-        $response = $client->request('POST', $host . "/logstores/staging_logstore/shards/lb", [
-            'headers' => $signedHeader,
-            'body' => $body
-        ]);
-        return $response;
+    private function getContent($key,$value){
+        $content = new Log\Content();
+        $content->setKey($key);
+        $content->setValue($value);
+        return $content;
     }
 
-    public function test($message){
+    public function log($message,$level = 'info'){
         $client = new \GuzzleHttp\Client();
-
         $host = "http://" . $this->project . '.' . $this->endpoint;
 
         $group = new LogGroup();
         $log = new Log();
         $log->setTime(time());
-        $content = new Log\Content();
-        $content->setKey('hello');
-        $content->setValue('world');
-        $log->setContents([$content]);
+
+        $log->setContents([$this->getContent('level',$level),$this->getContent('message',$message)]);
         $group->setLogs([$log]);
         $body = $group->serializeToString();
 
@@ -72,6 +54,4 @@ class Client
         ]);
         return $response;
     }
-
-
 }
