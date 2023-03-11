@@ -4,7 +4,6 @@ namespace Wuhuaji\AliyunLogSdk;
 
 class Util
 {
-
     /**
      * @param $method
      * @param $uri
@@ -59,34 +58,5 @@ class Util
         $auth = 'LOG ' . $accessKeyId . ':' . $signature;
         $headers['Authorization'] = $auth;
         return $headers;
-    }
-
-
-    public static function toBytes($logGroup) {
-        $mem = fopen("php://memory", "rwb");
-        $logGroup->write($mem);
-        rewind($mem);
-        $bytes="";
-
-        if(feof($mem)===false){
-            $bytes = fread($mem, 10*1024*1024);
-        }
-        fclose($mem);
-
-        return $bytes;
-    }
-
-    public static function toByte(string $msg){
-        $mem = fopen("php://memory", "rwb");
-        fwrite($mem, $msg);
-        rewind($mem);
-        $bytes="";
-
-        if(feof($mem)===false){
-            $bytes = fread($mem, 10*1024*1024);
-        }
-        fclose($mem);
-
-        return $bytes;
     }
 }

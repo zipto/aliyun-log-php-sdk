@@ -2,6 +2,7 @@
 
 namespace Wuhuaji\AliyunLogSdk;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Wuhuaji\AliyunLogSdk\ProtoBuf\Log;
 use Wuhuaji\AliyunLogSdk\ProtoBuf\LogGroup;
 
@@ -12,12 +13,15 @@ class Client
     protected $endpoint;
     protected $project;
 
-    public function __construct($accessKeyId, $accessKey, $endpoint, $project)
+    protected $logStore;
+
+    public function __construct($accessKeyId, $accessKey, $endpoint, $project, $logStore)
     {
         $this->accessKeyId = $accessKeyId;
         $this->accessKeySecret = $accessKey;
         $this->endpoint = $endpoint;
         $this->project = $project;
+        $this->logStore = $logStore;
     }
 
     private function getContent($key,$value){
@@ -27,10 +31,18 @@ class Client
         return $content;
     }
 
+    private function getHost(){
+        return "http://" . $this->project . '.' . $this->endpoint;
+    }
+
+    /**
+     * @param $message
+     * @param $level
+     * @return void
+     * @throws \Exception
+     */
     public function log($message,$level = 'info'){
         $client = new \GuzzleHttp\Client();
-        $host = "http://" . $this->project . '.' . $this->endpoint;
-
         $group = new LogGroup();
         $log = new Log();
         $log->setTime(time());
@@ -45,13 +57,33 @@ class Client
             'x-log-bodyrawsize' => strlen($body)
         ];
         $body = gzcompress ( $body, 6 );
-        $uri = $host . '/logstores/staging_logstore/shards/lb';
-        var_dump($uri);
-        $signedHeader = Util::sign('POST', '/logstores/staging_logstore/shards/lb', $this->accessKeyId, $this->accessKeySecret, [], $header, $body);
-        $response = $client->request('POST', $host . "/logstores/staging_logstore/shards/lb", [
+        $path = '/logstores/'. $this->logStore . '/shards/lb';
+        $uri = $this->getHost() . $path;
+        $signedHeader = Util::sign('POST', $path, $this->accessKeyId, $this->accessKeySecret, [], $header, $body);
+
+        $response = $client->request('POST', $uri, [
             'headers' => $signedHeader,
-            'body' => $body
+            'body' => $body,
+            'http_errors' => false,
         ]);
-        return $response;
+        if ($response->getStatusCode() != 200) {
+            throw new \Exception($response->getBody()->getContents());
+        }
+    }
+
+    public function info($message){
+        $this->log($message,'info');
+    }
+
+    public function warning($message){
+        $this->log($message,'warning');
+    }
+
+    public function error($message){
+        $this->log($message,'error');
+    }
+
+    public function debug($message){
+        $this->log($message,'debug');
     }
 }
