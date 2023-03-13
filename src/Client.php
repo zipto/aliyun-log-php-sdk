@@ -2,7 +2,6 @@
 
 namespace Wuhuaji\AliyunLogSdk;
 
-use GuzzleHttp\Exception\GuzzleException;
 use Wuhuaji\AliyunLogSdk\ProtoBuf\Log;
 use Wuhuaji\AliyunLogSdk\ProtoBuf\LogGroup;
 
@@ -57,7 +56,8 @@ class Client
             'x-log-bodyrawsize' => strlen($body)
         ];
         $body = gzcompress ( $body, 6 );
-        $path = '/logstores/'. $this->logStore . '/shards/lb';
+        $path = sprintf(Config::API_PUT_LOGS,$this->logStore);
+
         $uri = $this->getHost() . $path;
         $signedHeader = Util::sign('POST', $path, $this->accessKeyId, $this->accessKeySecret, [], $header, $body);
 
@@ -67,7 +67,18 @@ class Client
             'http_errors' => false,
         ]);
         if ($response->getStatusCode() != 200) {
-            throw new \Exception($response->getBody()->getContents());
+            $data = json_decode($response->getBody()->getContents(), true);
+            // if the errorCode is LogStoreNotExist, create the LogStage first
+            if ($data['errorCode'] === 'LogStoreNotExist'){
+                var_dump($data);
+                if ($this->createLogStore()){
+                    $this->log($message,$level);
+                }else{
+                    throw new \Exception("Create LogStore Failed");
+                }
+            }else{
+                    throw new \Exception($response->getBody()->getContents());
+            }
         }
     }
 
@@ -85,5 +96,31 @@ class Client
 
     public function debug($message){
         $this->log($message,'debug');
+    }
+
+    private function createLogStore()
+    {
+        $client = new \GuzzleHttp\Client();
+        $header = [
+            'Content-Type' => 'application/json',
+        ];
+        $uri = $this->getHost() . Config::API_CREATE_LOG_STORE;
+        $body = [
+            'logstoreName' => $this->logStore,
+            'shardCount' => Config::LOG_SHARD_COUNT,
+            'ttl' => Config::LOG_TTL
+        ];
+        $signedHeader = Util::sign('POST', Config::API_CREATE_LOG_STORE, $this->accessKeyId, $this->accessKeySecret, [], $header, json_encode($body));
+
+        $response = $client->request('POST', $uri, [
+            'headers' => $signedHeader,
+            'body' => json_encode($body),
+            'http_errors' => false,
+        ]);
+        if ($response->getStatusCode() != 200) {
+            throw new \Exception($response->getBody()->getContents());
+        }
+        sleep(Config::CREATE_LOG_STORE_WAIT);
+        return true;
     }
 }

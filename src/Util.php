@@ -19,7 +19,7 @@ class Util
         $contentLength = 0;
         $headers["x-log-apiversion"] = "0.6.0";
         $headers["x-log-signaturemethod"] = "hmac-sha1";
-        if (!is_null($body) && strlen($body) > 0) {
+        if (!is_null($body) && !empty($body)) {
             $contentLength = strlen($body);
             $contentMd5 = strtoupper(md5($body));
             $headers["Content-MD5"] = $contentMd5;
