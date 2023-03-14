@@ -17,6 +17,6 @@
     "minimum-stability": "dev",
     "require": {
         "guzzlehttp/guzzle": "^7.0",
-        "google/protobuf": "dev-master"
+        "google/protobuf": "3.*"
     }
 }

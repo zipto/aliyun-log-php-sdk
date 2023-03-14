@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3afb79ca1c3bec0753a6c98fa288aac8",
+    "content-hash": "71f688971dd9a063aacb99c9a4e0492f",
     "packages": [
         {
             "name": "google/protobuf",
-            "version": "dev-master",
+            "version": "v3.22.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/protocolbuffers/protobuf-php.git",
-                "reference": "c2b77f2cacaf1a3f540d0386f4dc97b651254f87"
+                "reference": "ff28a64946708e13f2be627b5e5561f247ecf95c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/c2b77f2cacaf1a3f540d0386f4dc97b651254f87",
-                "reference": "c2b77f2cacaf1a3f540d0386f4dc97b651254f87",
+                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/ff28a64946708e13f2be627b5e5561f247ecf95c",
+                "reference": "ff28a64946708e13f2be627b5e5561f247ecf95c",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,6 @@
             "suggest": {
                 "ext-bcmath": "Need to support JSON deserialization"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -47,9 +46,9 @@
                 "proto"
             ],
             "support": {
-                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v3.22.1"
+                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v3.22.2"
             },
-            "time": "2023-03-07T21:54:58+00:00"
+            "time": "2023-03-10T17:52:03+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -664,9 +663,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "google/protobuf": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
