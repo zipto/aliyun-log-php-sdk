@@ -4,14 +4,14 @@
     "license": "mit",
     "autoload": {
         "psr-4": {
-            "Wuhuaji\\AliyunLogSdk\\": "src/",
+            "Zipto\\AliyunLogSdk\\": "src/",
             "GPBMetadata\\": "src/GPBMetadata"
         }
     },
     "authors": [
         {
-            "name": "wuhuaji",
-            "email": "wuhuaji0@gmail.com"
+            "name": "zipto",
+            "email": "pacific.asiana@gmail.com"
         }
     ],
     "minimum-stability": "dev",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Wuhuaji\AliyunLogSdk;
+namespace Zipto\AliyunLogSdk;
 
 class Util
 {

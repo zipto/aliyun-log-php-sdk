@@ -1,9 +1,9 @@
 <?php
 
-namespace Wuhuaji\AliyunLogSdk;
+namespace Zipto\AliyunLogSdk;
 
-use Wuhuaji\AliyunLogSdk\ProtoBuf\Log;
-use Wuhuaji\AliyunLogSdk\ProtoBuf\LogGroup;
+use Zipto\AliyunLogSdk\ProtoBuf\Log;
+use Zipto\AliyunLogSdk\ProtoBuf\LogGroup;
 
 class Client
 {
