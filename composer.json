@@ -1,5 +1,5 @@
 {
-    "name": "wuhuaji/aliyun-log-php-sdk",
+    "name": "zipto/aliyun-log-php-sdk",
     "type": "library",
     "license": "mit",
     "autoload": {
