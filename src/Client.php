@@ -20,7 +20,25 @@ class Client
         $this->accessKeySecret = $accessKey;
         $this->endpoint = $endpoint;
         $this->project = $project;
-        $this->logStore = $logStore;
+        $this->logStore = $this->getValidLogStore($logStore);
+    }
+
+    /**
+     * @param $logStore
+     * @return string
+     * logstore 规则验证
+     */
+    private function getValidLogStore($logStore){
+        //只能包括小写字母、数字、短划线（-）和下划线（_）。不符合条件的字符会被替换成下划线（_）。
+        //必须以小写字母或者数字开头和结尾。不符合条件的开头和结尾，替换为[prefix] 或 [suffix]。
+        //长度为3-63字符。长度不足3，加上 prefix_ 前缀，太长的话，只保留前面的63个字符。
+        $logStore = strtolower($logStore);
+        $logStore = preg_replace('/[^a-z0-9_-]/','_',$logStore);
+        $logStore = preg_replace('/^[^a-z0-9]/','prefix_',$logStore);
+        $logStore = preg_replace('/[^a-z0-9]$/','_suffix',$logStore);
+        $logStore = strlen($logStore) < 3 ? 'prefix_' . $logStore : $logStore;
+        $logStore = substr($logStore,0,63);
+        return $logStore;
     }
 
     private function getContent($key,$value){
@@ -78,7 +96,8 @@ class Client
                     throw new \Exception("Create LogStore Failed");
                 }
             }else{
-                throw new \Exception($response->getBody()->getContents());
+                $message = "Aliyun Status : " .$response->getStatusCode() . " Response:". $response->getBody()->getContents();
+                throw new \Exception($message);
             }
         }
     }
