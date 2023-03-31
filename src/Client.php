@@ -14,13 +14,16 @@ class Client
 
     protected $logStore;
 
-    public function __construct($accessKeyId, $accessKey, $endpoint, $project, $logStore)
+    public function setLogStore($logStore){
+        $this->logStore = $this->getValidLogStore($logStore);
+    }
+
+    public function __construct($accessKeyId, $accessKey, $endpoint, $project)
     {
         $this->accessKeyId = $accessKeyId;
         $this->accessKeySecret = $accessKey;
         $this->endpoint = $endpoint;
         $this->project = $project;
-        $this->logStore = $this->getValidLogStore($logStore);
     }
 
     /**
@@ -53,20 +56,16 @@ class Client
     }
 
     /**
-     * @param $message
+     * @param $message: array of Log
      * @param $level
      * @return void
      * @throws \Exception
      */
-    public function log($message, $topic = '' , $level = 'info'){
-        $client = new \GuzzleHttp\Client();
+    public function log(array $logs , $topic = '' , $level = 'info'){
+        $http = new \GuzzleHttp\Client();
         $group = new LogGroup();
         $group->setTopic($topic);
-        $log = new Log();
-        $log->setTime(time());
-
-        $log->setContents([$this->getContent('level',$level),$this->getContent('message',$message)]);
-        $group->setLogs([$log]);
+        $group->setLogs($logs);
         $body = $group->serializeToString();
 
         $header = [
@@ -80,7 +79,7 @@ class Client
         $uri = $this->getHost() . $path;
         $signedHeader = Util::sign('POST', $path, $this->accessKeyId, $this->accessKeySecret, [], $header, $body);
 
-        $response = $client->request('POST', $uri, [
+        $response = $http->request('POST', $uri, [
             'headers' => $signedHeader,
             'body' => $body,
             'http_errors' => false,
@@ -91,7 +90,7 @@ class Client
             if (is_array($data) && $data['errorCode'] === 'LogStoreNotExist'){
                 if ($this->createLogStore()){
                     $this->createIndex();
-                    $this->log($message,$topic,$level);
+                    $this->log($logs,$topic,$level);
                 }else{
                     throw new \Exception("Create LogStore Failed");
                 }
@@ -101,6 +100,7 @@ class Client
             }
         }
     }
+
 
     public function info($message,$topic = ''){
         $this->log($message,$topic, 'info');
