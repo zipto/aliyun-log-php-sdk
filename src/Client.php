@@ -61,10 +61,9 @@ class Client
      * @return void
      * @throws \Exception
      */
-    public function log(array $logs , $topic = '' , $level = 'info'){
+    public function log(array $logs){
         $http = new \GuzzleHttp\Client();
         $group = new LogGroup();
-        $group->setTopic($topic);
         $group->setLogs($logs);
         $body = $group->serializeToString();
 
@@ -90,7 +89,7 @@ class Client
             if (is_array($data) && $data['errorCode'] === 'LogStoreNotExist'){
                 if ($this->createLogStore()){
                     $this->createIndex();
-                    $this->log($logs,$topic,$level);
+                    $this->log($logs);
                 }else{
                     throw new \Exception("Create LogStore Failed");
                 }
